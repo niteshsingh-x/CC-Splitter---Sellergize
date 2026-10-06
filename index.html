@@ -140,32 +140,45 @@
 
         if (!rawValue) return;
 
-        // Extract numbers using a regex that looks for groups of digits
-        const numbers = rawValue.replace(/\//g, ' ').match(/\d+/g);
+        // Clean out slashes and match groups of sequential digits
+        const parsedTokens = rawValue.replace(/\//g, ' ').match(/\d+/g);
 
-        if (!numbers || numbers.length < 2) {
-            return; // Not enough numbers to calculate yet
+        if (!parsedTokens || parsedTokens.length < 2) {
+            return; 
         }
+
+        // Convert tokens to integers
+        const values = parsedTokens.map(v => parseInt(v, 10));
+
+        let serialNumber = 1;
+        let baseNumbers = [];
+
+        // Check if one of the values is a 6-digit serial number
+        const serialIndex = values.findIndex(v => v.toString().length === 6);
+
+        if (serialIndex !== -1) {
+            serialNumber = values[serialIndex];
+            // Remove the serial number from the values array so we only have total items and people count remaining
+            baseNumbers = values.filter((_, idx) => idx !== serialIndex);
+        } else {
+            baseNumbers = values;
+        }
+
+        if (baseNumbers.length < 2) return;
 
         let totalNumbers = 0;
         let peopleCount = 0;
-        let serialNumber = 1; // Default starting number
 
-        const num1 = parseInt(numbers[0], 10);
-        const num2 = parseInt(numbers[1], 10);
+        const num1 = baseNumbers[0];
+        const num2 = baseNumbers[1];
 
-        // Figure out which is total numbers and which is people based on lower value rule
+        // Apply our core rule: The lower number is always the number of people
         if (num1 <= num2) {
             peopleCount = num1;
             totalNumbers = num2;
         } else {
             peopleCount = num2;
             totalNumbers = num1;
-        }
-
-        // Check if there is a 3rd number (the 6-digit serial number)
-        if (numbers.length >= 3) {
-            serialNumber = parseInt(numbers[2], 10);
         }
 
         if (peopleCount <= 0 || totalNumbers <= 0) {
@@ -178,14 +191,13 @@
             return;
         }
 
-        // Logic to distribute numbers evenly
+        // Standard sequence layout distribution logic
         let baseCount = Math.floor(totalNumbers / peopleCount);
         let remainder = totalNumbers % peopleCount;
 
         let currentStart = serialNumber;
 
         for (let i = 1; i <= peopleCount; i++) {
-            // Give extra numbers to the first few people to handle remainder cleanly
             let countForThisPerson = baseCount + (i <= remainder ? 1 : 0);
             let currentEnd = currentStart + countForThisPerson - 1;
 
