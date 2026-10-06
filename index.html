@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Splitter Tool</title>
+    <title>Crawler Coupon Distributor</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -33,10 +33,26 @@
             margin-top: 40px;
         }
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
+        /* Branding Styles */
+        .brand-header {
             text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .company-name {
+            display: block;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: rgba(88, 166, 255, 0.7); /* Attractive accent color at 70% opacity */
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .tool-title {
+            display: block;
+            font-size: 20px;
+            font-weight: 600;
             color: #ffffff;
         }
 
@@ -174,7 +190,11 @@
 <body>
 
 <div class="container">
-    <h1>Crawler Coupon Distributor - Sellergize</h1>
+    <!-- Updated Title Layout -->
+    <div class="brand-header">
+        <span class="company-name">Sellergize</span>
+        <span class="tool-title">Crawler Coupon Distributor</span>
+    </div>
     
     <div class="input-group">
         <label for="numberInput">Enter numbers (e.g., "106 6", "6/106", "106 6 217440"):</label>
@@ -222,20 +242,17 @@
 
         if (!rawValue) return;
 
-        // Clean out slashes and match groups of sequential digits
         const parsedTokens = rawValue.replace(/\//g, ' ').match(/\d+/g);
 
         if (!parsedTokens || parsedTokens.length < 2) {
             return; 
         }
 
-        // Convert tokens to integers
         const values = parsedTokens.map(v => parseInt(v, 10));
 
         let serialNumber = 1;
         let baseNumbers = [];
 
-        // Check if one of the values is a 6-digit serial number
         const serialIndex = values.findIndex(v => v.toString().length === 6);
 
         if (serialIndex !== -1) {
@@ -283,10 +300,7 @@
             let countForThisPerson = baseCount + (i <= remainder ? 1 : 0);
             let currentEnd = currentStart + countForThisPerson - 1;
 
-            // Row-specific text (Only the sequence range)
             const rangeTextOnly = `${currentStart} to ${currentEnd}`;
-            
-            // Full breakdown list formatting for "Copy All" button
             const fullLineText = `person ${i} = ${currentStart} to ${currentEnd} (${countForThisPerson} numbers)`;
             allLines.push(fullLineText);
 
