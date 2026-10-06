@@ -12,6 +12,7 @@
             --text-color: #c9d1d9;
             --accent-color: #58a6ff;
             --input-bg: #090d16;
+            --success-color: #3fb950;
         }
 
         body {
@@ -83,6 +84,14 @@
             padding: 15px;
             font-size: 16px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            flex-grow: 1;
         }
 
         .person-title {
@@ -98,6 +107,30 @@
         .count-highlight {
             color: #8b949e;
             font-size: 14px;
+        }
+
+        .copy-btn {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+        }
+
+        .copy-btn.copied {
+            background-color: rgba(63, 185, 80, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
         }
 
         .error {
@@ -201,13 +234,33 @@
             let countForThisPerson = baseCount + (i <= remainder ? 1 : 0);
             let currentEnd = currentStart + countForThisPerson - 1;
 
+            const textToCopy = `person ${i} = ${currentStart} to ${currentEnd} (${countForThisPerson} numbers)`;
+
             const card = document.createElement('div');
             card.className = 'person-card';
+            
             card.innerHTML = `
-                <span class="person-title">person ${i}</span> = 
-                <span class="range-highlight">${currentStart} to ${currentEnd}</span> 
-                <span class="count-highlight">(${countForThisPerson} numbers)</span>
+                <div class="card-content">
+                    <span class="person-title">person ${i}</span> = 
+                    <span class="range-highlight">${currentStart} to ${currentEnd}</span> 
+                    <span class="count-highlight">(${countForThisPerson} numbers)</span>
+                </div>
+                <button class="copy-btn">Copy</button>
             `;
+
+            // Add copy button logic
+            const copyBtn = card.querySelector('.copy-btn');
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
+
             outputEl.appendChild(card);
 
             currentStart = currentEnd + 1;
